@@ -15,17 +15,18 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-	"gopl.io/ch5/links"
+	"time"
+	//"gopl.io/ch5/links"
 )
 
 //!+crawl
 func crawl(url string) []string {
-	fmt.Println(url)
-	list, err := links.Extract(url)
+	fmt.Println("\n Received URL for crawl = " + url)
+	list, err := Extract(url)
 	if err != nil {
 		log.Print(err)
 	}
+	fmt.Println("\n crawl list == ", list, "\n crawl URL =  ", url+"\n\n\n")
 	return list
 }
 
@@ -33,14 +34,19 @@ func crawl(url string) []string {
 
 //!+main
 func main() {
+	fmt.Println("Start .........")
 	worklist := make(chan []string)
 
 	// Start with the command-line arguments.
 	go func() { worklist <- os.Args[1:] }()
 
+	fmt.Println("Point 1 .........")
+	fmt.Println("worklist == ", worklist)
 	// Crawl the web concurrently.
 	seen := make(map[string]bool)
 	for list := range worklist {
+		fmt.Println("\n\nPoint 2 ====================================================================================")
+		fmt.Println("\n TOP list = ", list)
 		for _, link := range list {
 			if !seen[link] {
 				seen[link] = true
@@ -49,8 +55,13 @@ func main() {
 				}(link)
 			}
 		}
+
+		time.Sleep(1000 * time.Millisecond)
 	}
 }
+
+// links.go 是从ch5 copy 过来的，用下面命令运行。
+// go run *.go http://gopl.io
 
 //!-main
 
